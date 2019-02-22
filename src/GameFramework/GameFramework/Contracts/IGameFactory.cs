@@ -7,8 +7,6 @@ namespace GameFramework.Contracts
 {
     public interface IGameFactory
     {
-        IGame Create(IServiceProvider serviceProvider);
-
-        void AddGame(IServiceCollection services);
+        void AddServices(IServiceCollection services);
     }
 }

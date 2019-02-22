@@ -8,11 +8,11 @@ namespace GameFramework.Contracts
     {
         Task CreateResourcesAsync();
 
+        void Draw(GameTime gameTime);
+
         void Draw(GameTime gameTime, IDrawingSession drawingSession);
 
         void Initialize();
-
-        void Run();
 
         void Update(GameTime gameTime);
     }

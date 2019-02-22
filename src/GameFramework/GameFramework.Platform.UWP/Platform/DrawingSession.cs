@@ -1,19 +1,26 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
+using GameFramework.Extensions;
+using GameFramework.Graphics;
 using Microsoft.Graphics.Canvas;
 using System;
 using System.Numerics;
 
 namespace GameFramework.Platform
 {
-    public class DrawingSession : IDrawingSession, IDisposable
+    public class DrawingSession : IDrawingSession
     {
         private CanvasDrawingSession canvasDrawingSession;
 
         public DrawingSession(CanvasDrawingSession canvasDrawingSession)
         {
             this.canvasDrawingSession = canvasDrawingSession ?? throw new ArgumentNullException(nameof(canvasDrawingSession));
+        }
+
+        public void Clear(Color color)
+        {
+            this.canvasDrawingSession.Clear(color.ToColor());
         }
 
         public void Close()
@@ -45,6 +52,11 @@ namespace GameFramework.Platform
         public void Draw(ITexture texture, ISpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, Vector2.One, Vector4.One, 0.0f, Vector2.One, 1.0f);
+        }
+
+        public void DrawText(string text, Vector2 position, Color color)
+        {
+            this.canvasDrawingSession.DrawText(text, position, color.ToColor());
         }
     }
 }

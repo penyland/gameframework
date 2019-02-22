@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Core;
-using System.Drawing;
+using System.Numerics;
 
 namespace GameFramework.Contracts
 {
@@ -15,18 +15,14 @@ namespace GameFramework.Contracts
 
         float Height { get; set; }
 
-        Size Size { get; set; }
-
         ISwapChain Target { get; set; }
 
-        void ResizeBuffersWithWidthAndHeightAndDpi(
-            float newWidth,
-            float newHeight,
-            float newDpi);
+        void ResizeBuffersWithWidthAndHeightAndDpi(float newWidth, float newHeight, float newDpi);
 
-        // IDrawingSession CreateDrawingSession(Colors.Black);
         IDrawingSession CreateDrawingSession();
 
         void Present();
+
+        void WaitForVerticalBlank();
     }
 }

@@ -7,72 +7,44 @@ namespace GameFramework.Core
 {
     public class GameTimer
     {
-        private static readonly long TicksPerSecond = 10000000;
-
-        private readonly Stopwatch timer;
+        private const long TicksPerSecond = TimeSpan.TicksPerSecond;
 
         private readonly long frequency;
         private readonly long maxDelta;
 
         private long lastTime;
         private long leftOverTicks;
-        private long elapsedTicks;
-        private long totalTicks;
         private long secondCounter;
-        private long targetElapsedTicks;
-
-        private int frameCount;
-        private int framesPerSecond;
         private int framesThisSecond;
-
-        private bool isFixedTimeStep;
 
         public GameTimer()
         {
-            this.timer = new Stopwatch();
             this.frequency = Stopwatch.Frequency;
             this.lastTime = Stopwatch.GetTimestamp();
 
             this.maxDelta = this.frequency / 10;
-            this.targetElapsedTicks = 0;
-            this.isFixedTimeStep = true;
+            this.TargetElapsedTicks = 0;
+            this.IsFixedTimeStep = true;
+            this.TargetElapsedTicks = this.DefaultTargetElapsedTime;
         }
 
-        public long ElapsedTicks
-        {
-            get => this.elapsedTicks;
-            set => this.elapsedTicks = value;
-        }
+        public long DefaultTargetElapsedTime => TicksPerSecond / 60;
 
-        public long TotalTicks => this.totalTicks;
+        public long ElapsedTicks { get; internal set; }
 
-        public int FrameCount
-        {
-            get => this.frameCount;
-            set => this.frameCount = value;
-        }
+        public long TotalTicks { get; internal set; }
 
-        public int FramesPerSecond
-        {
-            get => this.framesPerSecond;
-            set => this.framesPerSecond = value;
-        }
+        public int FrameCount { get; internal set; }
 
-        public bool IsFixedTimeStep
-        {
-            get => this.isFixedTimeStep;
-            set => this.isFixedTimeStep = value;
-        }
+        public int FramesPerSecond { get; internal set; }
 
-        public long TargetElapsedTicks
-        {
-            get => this.targetElapsedTicks;
-            set => this.targetElapsedTicks = value;
-        }
+        public bool IsFixedTimeStep { get; internal set; }
+
+        public long TargetElapsedTicks { get; internal set; }
 
         public double TargetElapsedSeconds
         {
-            set => this.targetElapsedTicks = (long)value * TicksPerSecond;
+            set => this.TargetElapsedTicks = (long)value * TicksPerSecond;
         }
 
         public void Tick(bool forceUpdate, long timeSpentPaused, Action<bool> action)
@@ -95,62 +67,56 @@ namespace GameFramework.Core
             timeDelta /= this.frequency;
 
             int lastFrameCount = this.FrameCount;
-            if (this.isFixedTimeStep)
+            if (this.IsFixedTimeStep)
             {
-                if (Math.Abs(timeDelta - this.targetElapsedTicks) < TicksPerSecond / 4000)
+                if (Math.Abs(timeDelta - this.TargetElapsedTicks) < TicksPerSecond / 4000)
                 {
-                    timeDelta = this.targetElapsedTicks;
+                    timeDelta = this.TargetElapsedTicks;
                 }
 
                 this.leftOverTicks += timeDelta;
 
                 // Check if running slowly
-                bool isRunningSlowly = this.leftOverTicks >= this.targetElapsedTicks * 2;
+                bool isRunningSlowly = this.leftOverTicks >= this.TargetElapsedTicks * 2;
 
-                while (this.leftOverTicks >= this.targetElapsedTicks)
+                while (this.leftOverTicks >= this.TargetElapsedTicks)
                 {
                     forceUpdate = false;
-                    this.elapsedTicks = this.targetElapsedTicks;
-                    this.totalTicks += this.targetElapsedTicks;
-                    this.leftOverTicks -= this.targetElapsedTicks;
-                    this.frameCount++;
+                    this.ElapsedTicks = this.TargetElapsedTicks;
+                    this.TotalTicks += this.TargetElapsedTicks;
+                    this.leftOverTicks -= this.TargetElapsedTicks;
+                    this.FrameCount++;
 
                     action(isRunningSlowly);
                 }
 
                 if (forceUpdate)
                 {
-                    this.frameCount++;
+                    this.FrameCount++;
                     action(false);
                 }
             }
             else
             {
-                this.elapsedTicks = timeDelta;
-                this.totalTicks += timeDelta;
+                this.ElapsedTicks = timeDelta;
+                this.TotalTicks += timeDelta;
                 this.leftOverTicks = 0;
-                this.frameCount++;
+                this.FrameCount++;
 
                 action(false);
             }
 
-            if (this.frameCount != lastFrameCount)
+            if (this.FrameCount != lastFrameCount)
             {
                 this.framesThisSecond++;
             }
 
             if (this.secondCounter >= this.frequency)
             {
-                this.framesPerSecond = this.framesThisSecond;
+                this.FramesPerSecond = this.framesThisSecond;
                 this.framesThisSecond = 0;
                 this.secondCounter %= this.frequency;
             }
-        }
-
-        public void Reset()
-        {
-            this.timer.Reset();
-            this.timer.Start();
         }
 
         public void ResetElapsedTime()

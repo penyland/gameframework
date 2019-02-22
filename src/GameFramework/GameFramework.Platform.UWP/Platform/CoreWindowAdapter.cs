@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
-using Microsoft.Graphics.Canvas;
-using Windows.UI;
+using GameFramework.Core;
+using GameFramework.Extensions;
+using System;
+using System.Numerics;
+using Windows.Graphics.Display;
 using Windows.UI.Core;
 
 namespace GameFramework.Platform
@@ -10,42 +13,38 @@ namespace GameFramework.Platform
     public class CoreWindowAdapter : IPlatformWindow
     {
         private readonly CoreWindow window;
-        private readonly CanvasSwapChainAdapter canvasSwapChainAdapter;
-        private CanvasDevice canvasDevice;
-        private IGraphicsDevice graphicsDevice;
+        private DisplayInformation currentDisplayInformation;
 
         public CoreWindowAdapter(CoreWindow window)
         {
             this.window = window;
-            this.canvasDevice = new CanvasDevice();
-            this.canvasSwapChainAdapter = new CanvasSwapChainAdapter(this.window, this.canvasDevice);
+            this.Size = this.window.Bounds.ToVector2();
 
+            this.window.Activated += this.Window_Activated;
             this.window.SizeChanged += this.CoreWindow_SizeChanged;
+            this.window.VisibilityChanged += this.Window_VisibilityChanged;
+            this.window.Closed += this.Window_Closed;
 
-            // TODO
-            this.graphicsDevice = new CanvasDeviceAdapter(new CanvasDevice());
+            this.currentDisplayInformation = DisplayInformation.GetForCurrentView();
+            this.currentDisplayInformation.DpiChanged += this.OnDpiChanged;
+            this.currentDisplayInformation.OrientationChanged += this.OnOrientationChanged;
         }
 
-        public IDrawingSession DrawingSession
-        {
-            get
-            {
-                this.canvasSwapChainAdapter.EnsureMatchesWindow(this.Window);
+        public event EventHandler<SizeChangedEventArgs> SizeChanged;
 
-                CanvasSwapChain swapChain = this.canvasSwapChainAdapter.SwapChain;
+        public event EventHandler Activated;
 
-                using (var ds = swapChain.CreateDrawingSession(Colors.Black))
-                {
-                    return new DrawingSession(ds);
-                }
-            }
-        }
+        public event EventHandler Closed;
+
+        public event EventHandler<Core.VisibilityChangedEventArgs> VisibilityChanged;
+
+        public event EventHandler<float> DpiChanged;
+
+        public event EventHandler<int> OrientationChanged;
 
         public CoreWindow Window => this.window;
 
-        public void OnActivated()
-        {
-        }
+        public Vector2 Size { get; internal set; }
 
         /// <summary>
         /// Process window events.
@@ -55,37 +54,35 @@ namespace GameFramework.Platform
             CoreWindow.GetForCurrentThread().Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessAllIfPresent);
         }
 
-        public IDrawingSession CreateDrawingSession()
+        private void Window_Activated(CoreWindow sender, WindowActivatedEventArgs args)
         {
-            this.canvasSwapChainAdapter.EnsureMatchesWindow(this.Window);
-
-            CanvasSwapChain swapChain = this.canvasSwapChainAdapter.SwapChain;
-
-            return new DrawingSession(swapChain.CreateDrawingSession(Colors.Black));
+            this.Activated?.Invoke(sender, null);
         }
 
-        public void Draw()
+        private void Window_VisibilityChanged(CoreWindow sender, Windows.UI.Core.VisibilityChangedEventArgs args)
         {
-            // if (not created)
-            // this.canvasSwapChainAdapter.EnsureMatchesWindow(this.window);
+            this.VisibilityChanged?.Invoke(this, new Core.VisibilityChangedEventArgs(args.Visible));
+        }
 
-            CanvasSwapChain swapChain = this.canvasSwapChainAdapter.SwapChain;
-
-            // Hand over to Game.
-            // using (CanvasDrawingSession ds = swapChain.CreateDrawingSession(Colors.Black))
-            // {
-            //    var drawingSession = new DrawingSession(ds);
-            // }
-
-            swapChain.Present();
-
-            // If !fixed time steps
-            // swapChain.WaitForVerticalBlank();
+        private void Window_Closed(CoreWindow sender, CoreWindowEventArgs args)
+        {
+            this.Closed?.Invoke(this, EventArgs.Empty);
         }
 
         private void CoreWindow_SizeChanged(CoreWindow sender, WindowSizeChangedEventArgs args)
         {
-            throw new System.NotImplementedException();
+            this.Size = args.Size.ToVector2();
+            this.SizeChanged?.Invoke(this, new SizeChangedEventArgs(args.Size.ToVector2()));
+        }
+
+        private void OnOrientationChanged(DisplayInformation sender, object args)
+        {
+            this.OrientationChanged?.Invoke(this, (int)sender.NativeOrientation);
+        }
+
+        private void OnDpiChanged(DisplayInformation sender, object args)
+        {
+            this.DpiChanged?.Invoke(this, sender.LogicalDpi);
         }
     }
 }

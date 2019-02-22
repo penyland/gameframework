@@ -2,7 +2,7 @@
 
 using System;
 
-namespace GameFramework
+namespace GameFramework.Utils
 {
     public static class Utils
     {

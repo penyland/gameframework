@@ -5,6 +5,10 @@ using Windows.ApplicationModel.Core;
 
 namespace GameFramework
 {
+    /// <summary>
+    /// Game framework factory.
+    /// </summary>
+    /// <typeparam name="T">The factory type that creates an instance of IGame.</typeparam>
     public class FrameworkViewSourceFactory<T> : IFrameworkViewSource
         where T : IGameFactory, new()
     {

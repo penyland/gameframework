@@ -11,34 +11,20 @@ namespace GameFramework
     {
         // GamePlatform
         // GameWindow
-        // GraphicsDevice
         // SoundDevice
         // ResourceManagement
         // InputDevices
-        public Game(IConfiguration configuration)
+        public Game(IConfiguration configuration, IGraphicsDevice graphicsDevice)
         {
             this.Configuration = configuration;
+            this.GraphicsDevice = graphicsDevice;
         }
 
         public IServiceProvider Container { get; private set; }
 
+        public IGraphicsDevice GraphicsDevice { get; }
+
         protected IConfiguration Configuration { get; }
-
-        public void Run()
-        {
-            // Initialize
-            // LoadContent
-
-            while (true)
-            {
-                //CoreWindow.GetForCurrentThread().Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
-
-                // Render
-
-                // Update
-                // Draw
-            }
-        }
 
         public virtual void Initialize()
         {
@@ -53,13 +39,12 @@ namespace GameFramework
         {
         }
 
-        public virtual void Draw(GameTime gameTime, IDrawingSession drawingSession)
+        public virtual void Draw(GameTime gameTime)
         {
         }
 
-        internal void Tick()
+        public virtual void Draw(GameTime gameTime, IDrawingSession drawingSession)
         {
-            // Increment time, call Update and Draw
         }
     }
 }

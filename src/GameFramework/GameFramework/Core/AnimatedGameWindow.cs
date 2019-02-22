@@ -149,10 +149,12 @@ namespace GameFramework.Core
             Size newSize,
             ISwapChain renderTarget)
         {
+            Size renderTargetSize = new Size((int)renderTarget.Width, (int)renderTarget.Height);
+
             bool needsTarget = renderTarget != null;
             bool alphaModeChanged = renderTarget.AlphaMode != newAlphaMode;
             bool dpiChanged = renderTarget.Dpi != newDpi;
-            bool sizeChanged = renderTarget.Size != newSize;
+            bool sizeChanged = renderTargetSize != newSize;
             bool needsCreate = needsTarget || alphaModeChanged;
 
             if (!needsCreate && !sizeChanged && !dpiChanged)
@@ -168,20 +170,20 @@ namespace GameFramework.Core
             else if ((sizeChanged || dpiChanged) && !needsCreate)
             {
                 renderTarget.ResizeBuffersWithWidthAndHeightAndDpi(newSize.Width, newSize.Height, newDpi);
-                renderTarget.Size = newSize;
+                renderTargetSize = newSize;
                 renderTarget.Dpi = newDpi;
             }
             else
             {
-                renderTarget.Target = this.Device.CreateSwapChain(
-                    newSize.Width,
-                    newSize.Height,
-                    newDpi,
-                    newAlphaMode);
+                //renderTarget.Target = this.Device.CreateSwapChain(
+                //    newSize.Width,
+                //    newSize.Height,
+                //    newDpi,
+                //    newAlphaMode);
 
                 renderTarget.AlphaMode = newAlphaMode;
                 renderTarget.Dpi = newDpi;
-                renderTarget.Size = newSize;
+                renderTargetSize = newSize;
             }
 
             return renderTarget;

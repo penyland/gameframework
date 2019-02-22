@@ -1,21 +1,27 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
+using GameFramework.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Numerics;
 
 namespace GameFramework.Contracts
 {
     public interface IPlatformWindow
     {
-        IDrawingSession DrawingSession { get; }
+        event EventHandler<SizeChangedEventArgs> SizeChanged;
 
-        void OnActivated();
+        event EventHandler Activated;
+
+        event EventHandler Closed;
+
+        event EventHandler<VisibilityChangedEventArgs> VisibilityChanged;
+
+        event EventHandler<float> DpiChanged;
+
+        event EventHandler<int> OrientationChanged;
+
+        Vector2 Size { get; }
 
         void ProcessEvents();
-
-        void Draw();
-
-        IDrawingSession CreateDrawingSession();
     }
 }

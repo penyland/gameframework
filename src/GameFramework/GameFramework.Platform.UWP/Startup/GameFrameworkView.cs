@@ -13,33 +13,30 @@ namespace GameFramework
     public class GameFrameworkView<T> : IFrameworkView
         where T : IGameFactory, new()
     {
-        private CoreWindowAdapter coreWindowAdapter;
         private GamePlatform<T> gamePlatform;
 
         public void Initialize(CoreApplicationView applicationView)
         {
-            Debug.WriteLine("Initialize");
             applicationView.Activated += this.ApplicationView_Activated;
             CoreApplication.Suspending += this.CoreApplication_Suspending;
+            CoreApplication.Resuming += this.CoreApplication_Resuming;
         }
 
         public void SetWindow(CoreWindow window)
         {
-            Debug.WriteLine("SetWindow");
             TitleBarManager.ExtendViewIntoTitleBar(true);
 
-            this.coreWindowAdapter = new CoreWindowAdapter(window);
+            this.gamePlatform =
+                GamePlatform<T>.Create(new CoreWindowAdapter(window));
         }
 
         public void Load(string entryPoint)
         {
-            Debug.WriteLine("Load");
-            this.gamePlatform = GamePlatform<T>.Create(this.coreWindowAdapter);
+            this.gamePlatform.Activate();
         }
 
         public void Run()
         {
-            Debug.WriteLine("Run");
             this.gamePlatform.Run();
         }
 
@@ -50,18 +47,22 @@ namespace GameFramework
 
         private void ApplicationView_Activated(CoreApplicationView sender, Windows.ApplicationModel.Activation.IActivatedEventArgs args)
         {
-            Debug.WriteLine("ApplicationView_Activated");
-            CoreWindow window = CoreWindow.GetForCurrentThread();
-            var window2 = sender.CoreWindow;
-            sender.CoreWindow.Activate();
+            var window = CoreWindow.GetForCurrentThread();
+            window.Activate();
         }
 
         private void CoreApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
 
-            // game.Dispose();
+            this.gamePlatform.Suspend();
+
             deferral.Complete();
+        }
+
+        private void CoreApplication_Resuming(object sender, object e)
+        {
+            this.gamePlatform.Resume();
         }
     }
 }

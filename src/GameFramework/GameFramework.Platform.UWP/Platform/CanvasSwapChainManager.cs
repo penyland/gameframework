@@ -4,6 +4,7 @@ using GameFramework.Contracts;
 using GameFramework.Core;
 using Microsoft.Graphics.Canvas;
 using System;
+using System.Numerics;
 using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.UI;
@@ -11,16 +12,16 @@ using Windows.UI.Core;
 
 namespace GameFramework.Platform
 {
-    public class CanvasSwapChainAdapter : ISwapChain
+    public class CanvasSwapChainManager : ISwapChain
     {
-        public CanvasSwapChainAdapter(CoreWindow window, CanvasDevice device)
+        public CanvasSwapChainManager(CoreWindow window, CanvasDevice device)
         {
             float currentDpi = DisplayInformation.GetForCurrentView().LogicalDpi;
             this.SwapChain = CanvasSwapChain.CreateForCoreWindow(device, window, currentDpi);
             this.Window = window;
         }
 
-        public CanvasSwapChainAdapter(CanvasSwapChain canvasSwapChain)
+        public CanvasSwapChainManager(CanvasSwapChain canvasSwapChain)
         {
             this.SwapChain = canvasSwapChain;
         }
@@ -39,8 +40,6 @@ namespace GameFramework.Platform
 
         public float Height { get; set; }
 
-        public System.Drawing.Size Size { get; set; }
-
         public static bool SizeEqualsWithTolerance(Size sizeA, Size sizeB)
         {
             const float tolerance = 0.1f;
@@ -58,35 +57,39 @@ namespace GameFramework.Platform
             return true;
         }
 
-        public void EnsureMatchesWindow(CoreWindow window)
-        {
-            Rect bounds = window.Bounds;
-            var windowSize = new Size(bounds.Width, bounds.Height);
-            float dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
-
-            if (!SizeEqualsWithTolerance(windowSize, this.SwapChain.Size) || dpi != this.SwapChain.Dpi)
-            {
-                // Note: swapchain size & window size may not be exactly equal since they are represented with
-                // floating point numbers and are calculated via different code paths.
-                this.SwapChain.ResizeBuffers((float)windowSize.Width, (float)windowSize.Height, dpi);
-            }
-        }
-
         public void ResizeBuffersWithWidthAndHeightAndDpi(float newWidth, float newHeight, float newDpi)
         {
-            this.SwapChain.ResizeBuffers(newWidth, newHeight, newDpi);
+            if (!SizeEqualsWithTolerance(
+                new Windows.Foundation.Size(newWidth, newHeight),
+                this.SwapChain.Size) ||
+                newDpi != this.SwapChain.Dpi)
+            {
+                this.SwapChain.ResizeBuffers(newWidth, newHeight, newDpi);
+            }
         }
 
         public IDrawingSession CreateDrawingSession()
         {
-            var ds = new DrawingSession(this.SwapChain.CreateDrawingSession(Colors.CornflowerBlue));
+            var canvasDrawingSession = this.SwapChain.CreateDrawingSession(Colors.CornflowerBlue);
 
-            return ds;
+            return new DrawingSession(canvasDrawingSession);
         }
 
         public void Present()
         {
-            this.SwapChain.Present();
+            try
+            {
+                this.SwapChain.Present();
+            }
+            catch (Exception e) when (this.SwapChain.Device.IsDeviceLost(e.HResult))
+            {
+                this.SwapChain.Device.RaiseDeviceLost();
+            }
+        }
+
+        public void WaitForVerticalBlank()
+        {
+            this.SwapChain?.WaitForVerticalBlank();
         }
     }
 }

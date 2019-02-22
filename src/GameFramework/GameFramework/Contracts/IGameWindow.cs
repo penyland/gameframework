@@ -8,8 +8,6 @@ namespace GameFramework.Contracts
 {
     public interface IGameWindow
     {
-        void OnActivated();
-
         void Run();
     }
 }

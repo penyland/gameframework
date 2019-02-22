@@ -117,16 +117,10 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FrameworkViewSourceFactory.cs" />
-    <Compile Include="GameFrameworkView.cs" />
-    <Compile Include="GamepadManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Renderer.cs" />
-    <Compile Include="SwapChainManager.cs" />
     <Compile Include="Win2DGame.cs" />
     <Compile Include="Win2DGameFactory.cs" />
-    <Compile Include="Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -168,7 +162,16 @@
       <Link>stylecop.json</Link>
     </AdditionalFiles>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GameFramework\GameFramework.Platform.UWP\GameFramework.Platform.UWP.csproj">
+      <Project>{279e7c34-88ea-46d1-ad4d-dbbd7fccf0e6}</Project>
+      <Name>GameFramework.Platform.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\GameFramework\GameFramework\GameFramework.csproj">
+      <Project>{d19ad21c-23e9-4391-b776-5d265d35a48f}</Project>
+      <Name>GameFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

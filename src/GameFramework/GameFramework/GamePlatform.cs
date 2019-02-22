@@ -13,28 +13,34 @@ namespace GameFramework
         where T : IGameFactory, new()
     {
         private readonly IGameFactory gameFactory;
-        private readonly IPlatformWindow platformWindow;
         private readonly IServiceCollection serviceCollection = new ServiceCollection();
+        private readonly IPlatformWindow window;
 
-        private GamePlatform(IPlatformWindow platformWindow)
+        private GamePlatform(IPlatformWindow window)
         {
-            this.platformWindow = platformWindow;
             this.gameFactory = new T();
+            this.window = window;
+
             this.ConfigureServices(this.serviceCollection);
         }
 
         public IServiceProvider Services { get; private set; }
 
-        public static GamePlatform<T> Create(IPlatformWindow platformWindow)
+        public static GamePlatform<T> Create(IPlatformWindow window)
         {
-            return new GamePlatform<T>(platformWindow);
+            return new GamePlatform<T>(window);
         }
 
-        public void Activated()
+        public void Activate()
+        {
+            this.BuildServiceProvider(this.serviceCollection);
+        }
+
+        public void Suspend()
         {
         }
 
-        public void Suspending()
+        public void Resume()
         {
         }
 
@@ -44,6 +50,7 @@ namespace GameFramework
             this.Services.GetService<IGameWindow>().Run();
         }
 
+        // Create service provider
         protected virtual void ConfigureServices(IServiceCollection services)
         {
             // Build config
@@ -63,14 +70,18 @@ namespace GameFramework
 
             services.AddOptions();
 
-            // Add game implementation
-            this.gameFactory.AddGame(services);
+            // Add platform window
+            services.AddSingleton<IPlatformWindow>(this.window);
+
+            // Add game services
+            this.gameFactory.AddServices(services);
 
             // Add framework required services
-            services.AddSingleton<IPlatformWindow>(this.platformWindow);
             services.AddSingleton<IGameWindow, GameWindow>();
+        }
 
-            // Create service provider
+        private void BuildServiceProvider(IServiceCollection services)
+        {
             this.Services = services.BuildServiceProvider();
         }
     }

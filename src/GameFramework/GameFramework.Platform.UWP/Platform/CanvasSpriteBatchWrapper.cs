@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
+using GameFramework.Utils;
 using Microsoft.Graphics.Canvas;
 using System;
 using System.Numerics;

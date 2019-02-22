@@ -1,16 +1,19 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
-using GameFramework.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Numerics;
 
 namespace GameFramework.Contracts
 {
     public interface IGraphicsDevice
     {
-        ISwapChain CreateSwapChain(float width, float height, float dpi, AlphaMode alphaMode);
+        float LogicalDpi { get; set; }
 
-        ISwapChain CreateSwapChain(IPlatformWindow window, float dpi);
+        Vector2 Size { get; set; }
+
+        ISwapChain SwapChain { get; }
+
+        void Present();
+
+        IDrawingSession CreateDrawingSession();
     }
 }

@@ -122,11 +122,13 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Platform\CanvasDeviceAdapter.cs" />
+    <Compile Include="Extensions\ColorExtensions.cs" />
+    <Compile Include="Extensions\RectExtensions.cs" />
     <Compile Include="Platform\CanvasSpriteBatchWrapper.cs" />
-    <Compile Include="Platform\CanvasSwapChainAdapter.cs" />
+    <Compile Include="Platform\CanvasSwapChainManager.cs" />
     <Compile Include="Platform\CoreWindowAdapter.cs" />
     <Compile Include="Platform\DrawingSession.cs" />
+    <Compile Include="Platform\GraphicsDevice.cs" />
     <Compile Include="Startup\FrameworkViewSourceFactory.cs" />
     <Compile Include="Startup\GameFrameworkView.cs" />
     <Compile Include="Platform\GameLoopSynchronizationContext.cs" />
