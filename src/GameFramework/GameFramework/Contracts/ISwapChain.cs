@@ -9,11 +9,11 @@ namespace GameFramework.Contracts
     {
         AlphaMode AlphaMode { get; set; }
 
-        float Dpi { get; set; }
+        float LogicalDpi { get; }
 
-        float Width { get; set; }
+        double Width { get; }
 
-        float Height { get; set; }
+        double Height { get; }
 
         ISwapChain Target { get; set; }
 
@@ -24,5 +24,7 @@ namespace GameFramework.Contracts
         void Present();
 
         void WaitForVerticalBlank();
+
+        void CreateSwapChain();
     }
 }

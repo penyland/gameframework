@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
+using GameFramework.Platform;
+using GameFramework.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,12 +15,14 @@ namespace GameFramework
         where T : IGameFactory, new()
     {
         private readonly IGameFactory gameFactory;
+        private readonly IPlatformFactory platformFactory;
         private readonly IServiceCollection serviceCollection = new ServiceCollection();
         private readonly IPlatformWindow window;
 
-        private GamePlatform(IPlatformWindow window)
+        private GamePlatform(IPlatformWindow window, IPlatformFactory platformFactory)
         {
             this.gameFactory = new T();
+            this.platformFactory = platformFactory;
             this.window = window;
 
             this.ConfigureServices(this.serviceCollection);
@@ -26,14 +30,14 @@ namespace GameFramework
 
         public IServiceProvider Services { get; private set; }
 
-        public static GamePlatform<T> Create(IPlatformWindow window)
+        public static GamePlatform<T> Create(IPlatformWindow window, IPlatformFactory platformFactory)
         {
-            return new GamePlatform<T>(window);
+            return new GamePlatform<T>(window, platformFactory);
         }
 
-        public void Activate()
+        public void Initialize()
         {
-            this.BuildServiceProvider(this.serviceCollection);
+            this.platformFactory.RegisterServices(this.serviceCollection);
         }
 
         public void Suspend()
@@ -46,7 +50,10 @@ namespace GameFramework
 
         public void Run()
         {
-            // A Game is hosted within a window
+            // All framework and platform services are added to the container, build it.
+            this.BuildServiceProvider(this.serviceCollection);
+
+            // Start running the framework
             this.Services.GetService<IGameWindow>().Run();
         }
 
@@ -73,11 +80,15 @@ namespace GameFramework
             // Add platform window
             services.AddSingleton<IPlatformWindow>(this.window);
 
+            this.platformFactory.RegisterServices(services);
+
             // Add game services
             this.gameFactory.AddServices(services);
 
             // Add framework required services
             services.AddSingleton<IGameWindow, GameWindow>();
+            services.AddSingleton<IResourceManager, ResourceManager>();
+            services.AddSingleton<IGraphicsDevice, GraphicsDevice>();
         }
 
         private void BuildServiceProvider(IServiceCollection services)

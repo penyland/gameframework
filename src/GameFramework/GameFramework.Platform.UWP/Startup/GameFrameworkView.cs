@@ -2,8 +2,6 @@
 
 using GameFramework.Contracts;
 using GameFramework.Platform;
-using GameFramework.Platform.Utils;
-using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
@@ -24,15 +22,17 @@ namespace GameFramework
 
         public void SetWindow(CoreWindow window)
         {
-            TitleBarManager.ExtendViewIntoTitleBar(true);
+            // TitleBarManager.ExtendViewIntoTitleBar(true);
 
             this.gamePlatform =
-                GamePlatform<T>.Create(new CoreWindowAdapter(window));
+                GamePlatform<T>.Create(
+                    CoreWindowAdapter.Create(window),
+                    PlatformFactory.Create());
         }
 
         public void Load(string entryPoint)
         {
-            this.gamePlatform.Activate();
+            this.gamePlatform.Initialize();
         }
 
         public void Run()

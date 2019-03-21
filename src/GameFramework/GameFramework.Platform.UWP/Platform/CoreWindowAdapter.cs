@@ -10,20 +10,19 @@ using Windows.UI.Core;
 
 namespace GameFramework.Platform
 {
-    public class CoreWindowAdapter : IPlatformWindow
+    public sealed class CoreWindowAdapter : IPlatformWindow
     {
-        private readonly CoreWindow window;
-        private DisplayInformation currentDisplayInformation;
+        private readonly DisplayInformation currentDisplayInformation;
 
-        public CoreWindowAdapter(CoreWindow window)
+        private CoreWindowAdapter(CoreWindow window)
         {
-            this.window = window;
-            this.Size = this.window.Bounds.ToVector2();
+            this.Window = window;
+            this.Size = this.Window.Bounds.ToVector2();
 
-            this.window.Activated += this.Window_Activated;
-            this.window.SizeChanged += this.CoreWindow_SizeChanged;
-            this.window.VisibilityChanged += this.Window_VisibilityChanged;
-            this.window.Closed += this.Window_Closed;
+            this.Window.Activated += this.Window_Activated;
+            this.Window.SizeChanged += this.CoreWindow_SizeChanged;
+            this.Window.VisibilityChanged += this.Window_VisibilityChanged;
+            this.Window.Closed += this.Window_Closed;
 
             this.currentDisplayInformation = DisplayInformation.GetForCurrentView();
             this.currentDisplayInformation.DpiChanged += this.OnDpiChanged;
@@ -42,9 +41,14 @@ namespace GameFramework.Platform
 
         public event EventHandler<int> OrientationChanged;
 
-        public CoreWindow Window => this.window;
+        public CoreWindow Window { get; }
 
         public Vector2 Size { get; internal set; }
+
+        public static IPlatformWindow Create(CoreWindow window)
+        {
+            return new CoreWindowAdapter(window);
+        }
 
         /// <summary>
         /// Process window events.

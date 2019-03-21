@@ -14,15 +14,18 @@ namespace GameFramework
         // SoundDevice
         // ResourceManagement
         // InputDevices
-        public Game(IConfiguration configuration, IGraphicsDevice graphicsDevice)
+        public Game(IConfiguration configuration, IGraphicsDevice graphicsDevice, IResourceManager resourceManager)
         {
             this.Configuration = configuration;
             this.GraphicsDevice = graphicsDevice;
+            this.ResourceManager = resourceManager;
         }
 
         public IServiceProvider Container { get; private set; }
 
         public IGraphicsDevice GraphicsDevice { get; }
+
+        public IResourceManager ResourceManager { get; }
 
         protected IConfiguration Configuration { get; }
 

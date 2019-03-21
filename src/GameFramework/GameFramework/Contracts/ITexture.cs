@@ -7,7 +7,7 @@ namespace GameFramework.Contracts
     /// <summary>
     /// Represents a particle resource.
     /// </summary>
-    public interface ITexture
+    public interface ITexture : IResource
     {
         /// <summary>
         /// Gets the center coordinates of the resource.

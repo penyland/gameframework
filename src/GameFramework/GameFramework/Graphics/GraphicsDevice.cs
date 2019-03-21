@@ -1,29 +1,34 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
-using Microsoft.Graphics.Canvas;
 using System;
 using System.Numerics;
-using Windows.Foundation;
-using Windows.Graphics.Display;
 
 namespace GameFramework.Platform
 {
-    public class GraphicsDevice : IGraphicsDevice
+    public sealed class GraphicsDevice : IGraphicsDevice
     {
         private readonly IPlatformWindow window;
-
-        private CanvasDevice canvasDevice;
+        private readonly IGraphicsDeviceAdapter graphicsDeviceAdapter;
+        private readonly ISwapChain swapChain;
         private Vector2 size;
         private float dpi;
 
-        public GraphicsDevice(IPlatformWindow window)
+        public GraphicsDevice(
+            IPlatformWindow window,
+            IGraphicsDeviceAdapter graphicsDeviceAdapter,
+            ISwapChain swapChainAdapter)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window));
+            this.graphicsDeviceAdapter = graphicsDeviceAdapter ?? throw new ArgumentNullException(nameof(graphicsDeviceAdapter));
+            this.swapChain = swapChainAdapter ?? throw new ArgumentNullException(nameof(swapChainAdapter));
+
             this.size = this.window.Size;
-            this.dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
+            this.dpi = this.swapChain.LogicalDpi;
 
             this.CreateDeviceResources();
+            this.CreateDeviceIndependentResources();
+            this.CreateWindowSizeDependentResources();
         }
 
         public float LogicalDpi
@@ -53,7 +58,7 @@ namespace GameFramework.Platform
             }
         }
 
-        public ISwapChain SwapChain { get; internal set; }
+        public ISwapChain SwapChain => this.swapChain;
 
         public void Present()
         {
@@ -67,12 +72,14 @@ namespace GameFramework.Platform
 
         private void CreateDeviceResources()
         {
-            this.canvasDevice = new CanvasDevice();
-            this.canvasDevice.DeviceLost += this.OnDeviceLost;
+            this.graphicsDeviceAdapter.CreateDeviceResources();
+            this.graphicsDeviceAdapter.DeviceLost += this.OnDeviceLost;
         }
 
-        private void OnDeviceLost(CanvasDevice sender, object args)
+        private void OnDeviceLost(object sender, object args)
         {
+            this.graphicsDeviceAdapter.DeviceLost -= this.OnDeviceLost;
+
             // Recreate device resources
             this.CreateDeviceResources();
             this.CreateWindowSizeDependentResources();
@@ -89,18 +96,19 @@ namespace GameFramework.Platform
         /// </summary>
         private void CreateWindowSizeDependentResources()
         {
-            if (this.SwapChain != null)
+            if (this.SwapChain.Target != null)
             {
                 // If the swap chain exists, resize it
-                Rect windowBounds = ((CoreWindowAdapter)this.window).Window.Bounds;
+                Vector2 size = this.window.Size;
+
                 this.SwapChain.ResizeBuffersWithWidthAndHeightAndDpi(
-                    (float)windowBounds.Width,
-                    (float)windowBounds.Height,
+                    (float)size.X,
+                    (float)size.Y,
                     this.LogicalDpi);
             }
             else
             {
-                this.SwapChain = new CanvasSwapChainManager(((CoreWindowAdapter)this.window).Window, this.canvasDevice);
+                this.swapChain.CreateSwapChain();
             }
         }
     }

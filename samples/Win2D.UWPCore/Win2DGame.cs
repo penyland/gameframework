@@ -12,8 +12,13 @@ namespace Win2D.UWPCore
 {
     public class Win2DGame : Game
     {
-        public Win2DGame(IConfiguration configuration, IGraphicsDevice graphicsDevice)
-            : base(configuration, graphicsDevice)
+        private ITexture particleBitmap;
+
+        public Win2DGame(
+            IConfiguration configuration,
+            IGraphicsDevice graphicsDevice,
+            IResourceManager resourceManager)
+            : base(configuration, graphicsDevice, resourceManager)
         {
         }
 
@@ -29,11 +34,13 @@ namespace Win2D.UWPCore
             // ISpriteBatch spriteBatch = new SpriteBatch(this.GraphicsDevice);
         }
 
-        public override Task CreateResourcesAsync()
+        public override async Task CreateResourcesAsync()
         {
             Debug.WriteLine("Win2DGame.CreateResourcesAsync()");
 
-            return Task.FromResult<object>(null);
+            this.particleBitmap = await this.ResourceManager.LoadAsync<ITexture>("ms-appx:///Assets/Particle.png");
+
+            //return Task.FromResult<object>(null);
         }
 
         public override void Update(GameTime gameTime)
@@ -80,6 +87,8 @@ namespace Win2D.UWPCore
 
             drawingSession.DrawText("LogicalDPI = " + this.GraphicsDevice.LogicalDpi, new Vector2(0, 160), Colors.Black);
             drawingSession.DrawText("Size       = " + this.GraphicsDevice.Size.ToString(), new Vector2(0, 180), Colors.Black);
+
+            drawingSession.Draw(this.particleBitmap, Matrix3x2.Identity, Vector4.One);
 
             base.Draw(gameTime);
 

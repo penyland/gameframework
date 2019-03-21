@@ -153,7 +153,7 @@ namespace GameFramework.Core
 
             bool needsTarget = renderTarget != null;
             bool alphaModeChanged = renderTarget.AlphaMode != newAlphaMode;
-            bool dpiChanged = renderTarget.Dpi != newDpi;
+            bool dpiChanged = renderTarget.LogicalDpi != newDpi;
             bool sizeChanged = renderTargetSize != newSize;
             bool needsCreate = needsTarget || alphaModeChanged;
 
@@ -171,7 +171,7 @@ namespace GameFramework.Core
             {
                 renderTarget.ResizeBuffersWithWidthAndHeightAndDpi(newSize.Width, newSize.Height, newDpi);
                 renderTargetSize = newSize;
-                renderTarget.Dpi = newDpi;
+                //renderTarget.LogicalDpi = newDpi;
             }
             else
             {
@@ -182,7 +182,7 @@ namespace GameFramework.Core
                 //    newAlphaMode);
 
                 renderTarget.AlphaMode = newAlphaMode;
-                renderTarget.Dpi = newDpi;
+                //renderTarget.LogicalDpi = newDpi;
                 renderTargetSize = newSize;
             }
 

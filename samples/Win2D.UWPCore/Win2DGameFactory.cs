@@ -11,7 +11,6 @@ namespace Win2D.UWPCore
     {
         public void AddServices(IServiceCollection services)
         {
-            services.AddSingleton<IGraphicsDevice, GraphicsDevice>();
             services.AddSingleton<IGame, Win2DGame>();
         }
     }

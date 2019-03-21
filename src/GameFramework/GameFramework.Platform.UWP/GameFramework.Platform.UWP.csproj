@@ -124,16 +124,17 @@
   <ItemGroup>
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\RectExtensions.cs" />
+    <Compile Include="Platform\CanvasBitmapResourceLoader.cs" />
+    <Compile Include="Platform\CanvasDeviceAdapter.cs" />
     <Compile Include="Platform\CanvasSpriteBatchWrapper.cs" />
-    <Compile Include="Platform\CanvasSwapChainManager.cs" />
+    <Compile Include="Platform\CanvasSwapChainAdapter.cs" />
     <Compile Include="Platform\CoreWindowAdapter.cs" />
-    <Compile Include="Platform\DrawingSession.cs" />
-    <Compile Include="Platform\GraphicsDevice.cs" />
+    <Compile Include="Platform\DrawingSessionAdapter.cs" />
+    <Compile Include="Platform\PlatformFactory.cs" />
     <Compile Include="Startup\FrameworkViewSourceFactory.cs" />
     <Compile Include="Startup\GameFrameworkView.cs" />
     <Compile Include="Platform\GameLoopSynchronizationContext.cs" />
     <Compile Include="Platform\InputManager.cs" />
-    <Compile Include="Platform\ResourceCreator.cs" />
     <Compile Include="Platform\Texture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\TitleBarManager.cs" />

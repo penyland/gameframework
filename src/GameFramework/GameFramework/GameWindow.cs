@@ -37,8 +37,13 @@ namespace GameFramework
 
         public IGraphicsDevice GraphicsDevice { get; }
 
-        public async void InitializeAsync()
+        public async Task InitializeAsync()
         {
+            if (this.frameworkState != GameFrameworkState.WaitingForResources)
+            {
+                return;
+            }
+
             // Initialize framework state
             // Initialize game
             await Task.Factory.StartNew(() =>
@@ -67,13 +72,11 @@ namespace GameFramework
             });
         }
 
-        public void Run()
+        public async void Run()
         {
             Debug.WriteLine("GameWindow.Run()");
-
-            this.InitializeAsync();
-
             Debug.WriteLine("GameWindow.Run() - Starting gameloop");
+
             while (true)
             {
                 if (this.isVisible)
@@ -81,6 +84,7 @@ namespace GameFramework
                     switch (this.frameworkState)
                     {
                         case GameFrameworkState.WaitingForResources:
+                            this.InitializeAsync();
                             break;
                         case GameFrameworkState.ResourcesLoaded:
                             break;

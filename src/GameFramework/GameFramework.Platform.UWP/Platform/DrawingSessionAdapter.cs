@@ -9,11 +9,11 @@ using System.Numerics;
 
 namespace GameFramework.Platform
 {
-    public class DrawingSession : IDrawingSession
+    public class DrawingSessionAdapter : IDrawingSession
     {
         private CanvasDrawingSession canvasDrawingSession;
 
-        public DrawingSession(CanvasDrawingSession canvasDrawingSession)
+        public DrawingSessionAdapter(CanvasDrawingSession canvasDrawingSession)
         {
             this.canvasDrawingSession = canvasDrawingSession ?? throw new ArgumentNullException(nameof(canvasDrawingSession));
         }

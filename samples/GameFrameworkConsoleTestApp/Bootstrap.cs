@@ -13,7 +13,7 @@ namespace GameFrameworkConsoleTestApp
 
         public Bootstrap()
         {
-            this.gamePlatform = GamePlatform<GameFactory>.Create(new MockWindow());
+            this.gamePlatform = GamePlatform<GameFactory>.Create(new MockWindow(), null);
         }
 
         public void Run()
