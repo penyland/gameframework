@@ -13,6 +13,7 @@ namespace Win2D.UWPCore
     public class Win2DGame : Game
     {
         private ITexture particleBitmap;
+        private ITexture maxBitmap;
 
         public Win2DGame(
             IConfiguration configuration,
@@ -39,8 +40,7 @@ namespace Win2D.UWPCore
             Debug.WriteLine("Win2DGame.CreateResourcesAsync()");
 
             this.particleBitmap = await this.ResourceManager.LoadAsync<ITexture>("ms-appx:///Assets/Particle.png");
-
-            //return Task.FromResult<object>(null);
+            this.maxBitmap = await this.ResourceManager.LoadAsync<ITexture>("ms-appx:///Assets/max_face_south.png");
         }
 
         public override void Update(GameTime gameTime)
@@ -88,7 +88,9 @@ namespace Win2D.UWPCore
             drawingSession.DrawText("LogicalDPI = " + this.GraphicsDevice.LogicalDpi, new Vector2(0, 160), Colors.Black);
             drawingSession.DrawText("Size       = " + this.GraphicsDevice.Size.ToString(), new Vector2(0, 180), Colors.Black);
 
-            drawingSession.Draw(this.particleBitmap, Matrix3x2.Identity, Vector4.One);
+            Matrix3x2 matrix3X2 = Matrix3x2.CreateTranslation(100, 100);
+
+            drawingSession.Draw(this.maxBitmap, matrix3X2, Vector4.One);
 
             base.Draw(gameTime);
 

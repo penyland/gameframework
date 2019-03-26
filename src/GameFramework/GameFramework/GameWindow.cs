@@ -18,7 +18,8 @@ namespace GameFramework
         private bool renderNeeded;
         private bool hasUpdated = false;
 
-        private GameFrameworkState frameworkState = GameFrameworkState.WaitingForResources;
+        private GameFrameworkState frameworkState;
+        private object stateLock = new object();
 
         public GameWindow(IPlatformWindow platformWindow, IGraphicsDevice graphicsDevice, IGame game)
         {
@@ -37,9 +38,28 @@ namespace GameFramework
 
         public IGraphicsDevice GraphicsDevice { get; }
 
-        public async Task InitializeAsync()
+        private GameFrameworkState State
         {
-            if (this.frameworkState != GameFrameworkState.WaitingForResources)
+            get
+            {
+                lock (this.stateLock)
+                {
+                    return this.frameworkState;
+                }
+            }
+
+            set
+            {
+                lock (this.stateLock)
+                {
+                    this.frameworkState = value;
+                }
+            }
+        }
+
+        public async void InitializeAsync()
+        {
+            if (this.State != GameFrameworkState.NotInitialized)
             {
                 return;
             }
@@ -49,14 +69,15 @@ namespace GameFramework
             await Task.Factory.StartNew(() =>
             {
                 Debug.WriteLine("GameWindow.Initialize -> Calling game.Initialize");
+                this.State = GameFrameworkState.Initializing;
                 this.game?.Initialize();
                 Debug.WriteLine("GameWindow.Initialize -> game.Initialize DONE");
             })
-            .ContinueWith(async (_) =>
+            .ContinueWith((_) =>
             {
                 Debug.WriteLine("GameWindow.Initialize -> Calling game.CreateResourcesAsync");
-                await this.game?.CreateResourcesAsync();
-                this.frameworkState = GameFrameworkState.ResourcesLoaded;
+                this.game?.CreateResourcesAsync();
+                this.State = GameFrameworkState.ResourcesLoaded;
                 Debug.WriteLine("GameWindow.Initialize -> Calling game.CreateResourcesAsync - DONE");
             })
             .ContinueWith((_) =>
@@ -64,15 +85,15 @@ namespace GameFramework
                 Debug.WriteLine("GameWindow.Initialize -> Transitioning to Paused");
 
                 // Finalize framework state
-                this.frameworkState = GameFrameworkState.Paused;
+                this.State = GameFrameworkState.Paused;
 
                 // Start game loop
                 Debug.WriteLine("GameWindow.Initialize -> Transitioning to Running");
-                this.frameworkState = GameFrameworkState.Running;
+                this.State = GameFrameworkState.Running;
             });
         }
 
-        public async void Run()
+        public void Run()
         {
             Debug.WriteLine("GameWindow.Run()");
             Debug.WriteLine("GameWindow.Run() - Starting gameloop");
@@ -81,9 +102,9 @@ namespace GameFramework
             {
                 if (this.isVisible)
                 {
-                    switch (this.frameworkState)
+                    switch (this.State)
                     {
-                        case GameFrameworkState.WaitingForResources:
+                        case GameFrameworkState.NotInitialized:
                             this.InitializeAsync();
                             break;
                         case GameFrameworkState.ResourcesLoaded:
@@ -96,8 +117,6 @@ namespace GameFramework
                             break;
                         case GameFrameworkState.Running:
                             {
-                                this.platformWindowAdapter.ProcessEvents();
-
                                 this.Tick();
                             }
 
@@ -108,8 +127,9 @@ namespace GameFramework
                 }
                 else
                 {
-                    this.platformWindowAdapter.ProcessEvents();
                 }
+
+                this.platformWindowAdapter.ProcessEvents();
             }
         }
 

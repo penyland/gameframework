@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 namespace GameFramework.Core
 {
     public enum GameFrameworkState
     {
+        NotInitialized,
+        Initializing,
         WaitingForResources,
         ResourcesLoaded,
         Suspended,
