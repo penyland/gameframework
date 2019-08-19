@@ -22,8 +22,6 @@ namespace GameFramework
 
         public void SetWindow(CoreWindow window)
         {
-            // TitleBarManager.ExtendViewIntoTitleBar(true);
-
             this.gamePlatform =
                 GamePlatform<T>.Create(
                     CoreWindowAdapter.Create(window),

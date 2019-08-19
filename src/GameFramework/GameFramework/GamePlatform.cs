@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
+using GameFramework.Input;
 using GameFramework.Platform;
 using GameFramework.Resources;
 using Microsoft.Extensions.Configuration;
@@ -24,8 +25,6 @@ namespace GameFramework
             this.gameFactory = new T();
             this.platformFactory = platformFactory;
             this.window = window;
-
-            this.ConfigureServices(this.serviceCollection);
         }
 
         public IServiceProvider Services { get; private set; }
@@ -37,7 +36,11 @@ namespace GameFramework
 
         public void Initialize()
         {
-            this.platformFactory.RegisterServices(this.serviceCollection);
+            // Initialize platform services
+            this.platformFactory.Initialize(this.window, this.serviceCollection);
+
+            // Configure all framework services
+            this.ConfigureServices(this.serviceCollection);
         }
 
         public void Suspend()
@@ -80,8 +83,6 @@ namespace GameFramework
             // Add platform window
             services.AddSingleton<IPlatformWindow>(this.window);
 
-            this.platformFactory.RegisterServices(services);
-
             // Add game services
             this.gameFactory.AddServices(services);
 
@@ -89,6 +90,7 @@ namespace GameFramework
             services.AddSingleton<IGameWindow, GameWindow>();
             services.AddSingleton<IResourceManager, ResourceManager>();
             services.AddSingleton<IGraphicsDevice, GraphicsDevice>();
+            services.AddSingleton<IInputManager, InputManager>();
         }
 
         private void BuildServiceProvider(IServiceCollection services)

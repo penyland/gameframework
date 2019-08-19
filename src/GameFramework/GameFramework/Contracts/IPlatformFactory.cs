@@ -6,6 +6,6 @@ namespace GameFramework.Contracts
 {
     public interface IPlatformFactory
     {
-        void RegisterServices(IServiceCollection services);
+        void Initialize(IPlatformWindow window, IServiceCollection services);
     }
 }

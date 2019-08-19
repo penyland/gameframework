@@ -1,8 +1,9 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
+using GameFramework.Input;
+using GameFramework.Platform.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Graphics.Canvas;
 
 namespace GameFramework.Platform
 {
@@ -12,16 +13,23 @@ namespace GameFramework.Platform
         {
         }
 
+        public void RegisterResourceLoaders()
+        {
+        }
+
         // Add all platform specific classes to the application container
-        public void RegisterServices(IServiceCollection services)
+        public void Initialize(IPlatformWindow window, IServiceCollection services)
         {
             services.AddSingleton<IGraphicsDeviceAdapter, CanvasDeviceAdapter>();
             services.AddSingleton<ISwapChain, CanvasSwapChainAdapter>();
             services.AddSingleton<ITextureResourceLoader, CanvasBitmapResourceLoader>();
-        }
 
-        public void RegisterResourceLoaders()
-        {
+            // Initialize devices
+            var keyboard = new Keyboard();
+            var keyboardDeviceManager = new CoreWindowKeyboardInputSource(window, keyboard);
+
+            services.AddSingleton<IKeyboardDeviceAdapter>(keyboardDeviceManager);
+            services.AddSingleton<IKeyboard>(keyboard);
         }
 
         internal static IPlatformFactory Create()

@@ -21,9 +21,10 @@ namespace GameFramework
         private GameFrameworkState frameworkState;
         private object stateLock = new object();
 
-        public GameWindow(IPlatformWindow platformWindow, IGraphicsDevice graphicsDevice, IGame game)
+        public GameWindow(IPlatformWindow platformWindow, IGraphicsDevice graphicsDevice, IInputManager inputManager, IGame game)
         {
             this.GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
+            this.InputManager = inputManager ?? throw new ArgumentNullException(nameof(inputManager));
             this.game = game ?? throw new ArgumentNullException(nameof(game));
 
             this.platformWindowAdapter = platformWindow ?? throw new ArgumentNullException(nameof(platformWindow));
@@ -37,6 +38,8 @@ namespace GameFramework
         }
 
         public IGraphicsDevice GraphicsDevice { get; }
+
+        public IInputManager InputManager { get; }
 
         private GameFrameworkState State
         {
@@ -181,6 +184,9 @@ namespace GameFramework
 
         private bool Update(bool forceUpdate, long timeSpentPaused)
         {
+            // Process window events
+            this.InputManager.Update();
+
             this.gameTimer.Tick(
                 forceUpdate,
                 timeSpentPaused,

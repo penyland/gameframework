@@ -5,6 +5,7 @@ using GameFramework.Contracts;
 using GameFramework.Graphics;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -12,15 +13,20 @@ namespace Win2D.UWPCore
 {
     public class Win2DGame : Game
     {
+        private readonly IKeyboard keyboard;
+
         private ITexture particleBitmap;
         private ITexture maxBitmap;
 
         public Win2DGame(
             IConfiguration configuration,
             IGraphicsDevice graphicsDevice,
-            IResourceManager resourceManager)
+            IResourceManager resourceManager,
+            IInputManager inputManager,
+            IKeyboard keyboard)
             : base(configuration, graphicsDevice, resourceManager)
         {
+            this.keyboard = keyboard;
         }
 
         public override void Initialize()
@@ -88,9 +94,22 @@ namespace Win2D.UWPCore
             drawingSession.DrawText("LogicalDPI = " + this.GraphicsDevice.LogicalDpi, new Vector2(0, 160), Colors.Black);
             drawingSession.DrawText("Size       = " + this.GraphicsDevice.Size.ToString(), new Vector2(0, 180), Colors.Black);
 
-            Matrix3x2 matrix3X2 = Matrix3x2.CreateTranslation(100, 100);
+            var matrix3X2 = Matrix3x2.CreateTranslation(100, 100);
 
             drawingSession.Draw(this.maxBitmap, matrix3X2, Vector4.One);
+
+            GameFramework.Input.KeyboardState keyBoardState = this.keyboard.GetState();
+
+            if (keyBoardState.PressedKeys.Count > 0)
+            {
+                drawingSession.DrawText("KeyboardState: " + keyBoardState.PressedKeys.Count + " keys pressed", new Vector2(10, 300), Colors.Black);
+
+                var keyList = keyBoardState.PressedKeys.ToList();
+                for (int i = 0; i < keyList.Count; i++)
+                {
+                    drawingSession.DrawText("KeyboardState: " + keyList[i].ToString() + " pressed", new Vector2(10, 315 + (i * 15)), Colors.Black);
+                }
+            }
 
             base.Draw(gameTime);
 

@@ -3,7 +3,7 @@
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 
-namespace GameFramework.Platform
+namespace GameFramework.Platform.Input
 {
     public class InputManager
     {
