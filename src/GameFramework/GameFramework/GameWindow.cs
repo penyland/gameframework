@@ -69,17 +69,16 @@ namespace GameFramework
 
             // Initialize framework state
             // Initialize game
-            await Task.Factory.StartNew(() =>
-            {
-                Debug.WriteLine("GameWindow.Initialize -> Calling game.Initialize");
-                this.State = GameFrameworkState.Initializing;
-                this.game?.Initialize();
-                Debug.WriteLine("GameWindow.Initialize -> game.Initialize DONE");
-            })
-            .ContinueWith((_) =>
+            Debug.WriteLine("GameWindow.Initialize -> Calling game.Initialize");
+            this.State = GameFrameworkState.Initializing;
+            this.game?.Initialize();
+            Debug.WriteLine("GameWindow.Initialize -> game.Initialize DONE");
+
+            // Load resources asynchronously
+            await Task.Run(async () =>
             {
                 Debug.WriteLine("GameWindow.Initialize -> Calling game.CreateResourcesAsync");
-                this.game?.CreateResourcesAsync();
+                await this.game?.CreateResourcesAsync();
                 this.State = GameFrameworkState.ResourcesLoaded;
                 Debug.WriteLine("GameWindow.Initialize -> Calling game.CreateResourcesAsync - DONE");
             })
@@ -155,14 +154,13 @@ namespace GameFramework
             {
                 if (this.GraphicsDevice.SwapChain != null)
                 {
-                    // Create drawing session
-                    using (IDrawingSession drawingSession = this.GraphicsDevice.CreateDrawingSession())
-                    {
-                        GameTime gameTime = this.CreateTimingInfo(false);
-                        this.game.Draw(gameTime, drawingSession);
-                    }
+                    this.game.BeginDraw();
+
+                    this.game.Draw(this.CreateTimingInfo(false));
 
                     this.GraphicsDevice.Present();
+
+                    this.game.EndDraw();
 
                     drew = true;
                 }
@@ -184,9 +182,6 @@ namespace GameFramework
 
         private bool Update(bool forceUpdate, long timeSpentPaused)
         {
-            // Process window events
-            this.InputManager.Update();
-
             this.gameTimer.Tick(
                 forceUpdate,
                 timeSpentPaused,
@@ -198,6 +193,11 @@ namespace GameFramework
                 });
 
             return true;
+        }
+
+        private void Draw(GameTime gameTime, IDrawingSession drawingSession)
+        {
+            this.game.Draw(gameTime, drawingSession);
         }
 
         private void OnActivated(object sender, EventArgs e)

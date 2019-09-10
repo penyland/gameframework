@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GameFramework.Platform
 {
-    public sealed class PlatformFactory : IPlatformFactory
+    public sealed class UWPPlatformFactory : IPlatformFactory
     {
-        private PlatformFactory()
+        private UWPPlatformFactory()
         {
         }
 
@@ -34,7 +34,7 @@ namespace GameFramework.Platform
 
         internal static IPlatformFactory Create()
         {
-            return new PlatformFactory();
+            return new UWPPlatformFactory();
         }
     }
 }

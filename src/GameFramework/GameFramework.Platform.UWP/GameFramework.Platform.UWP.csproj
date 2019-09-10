@@ -131,7 +131,7 @@
     <Compile Include="Platform\CanvasSwapChainAdapter.cs" />
     <Compile Include="Platform\CoreWindowAdapter.cs" />
     <Compile Include="Platform\DrawingSessionAdapter.cs" />
-    <Compile Include="Platform\PlatformFactory.cs" />
+    <Compile Include="Platform\UWPPlatformFactory.cs" />
     <Compile Include="Startup\FrameworkViewSourceFactory.cs" />
     <Compile Include="Startup\GameFrameworkView.cs" />
     <Compile Include="Platform\GameLoopSynchronizationContext.cs" />

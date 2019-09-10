@@ -25,7 +25,7 @@ namespace GameFramework
             this.gamePlatform =
                 GamePlatform<T>.Create(
                     CoreWindowAdapter.Create(window),
-                    PlatformFactory.Create());
+                    UWPPlatformFactory.Create());
         }
 
         public void Load(string entryPoint)

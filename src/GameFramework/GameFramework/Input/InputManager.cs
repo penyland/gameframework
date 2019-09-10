@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Peter Nylander.  All rights reserved.
 
 using GameFramework.Contracts;
+using GameFramework.Core;
 
 namespace GameFramework.Input
 {
-    internal class InputManager : IInputManager
+    internal class InputManager : GameComponentBase, IGameComponent, IInputManager
     {
         private readonly IKeyboard keyboard;
 
@@ -25,9 +26,10 @@ namespace GameFramework.Input
 
         public bool HasKeyboard => this.keyboard != null;
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             // Update all input sources so they can send events and update their state
+            this.keyboard.Update();
         }
 
         public void Update()

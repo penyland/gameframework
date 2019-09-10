@@ -12,6 +12,11 @@ namespace GameFrameworkConsoleTestApp
     {
         public event EventHandler OnCompleted;
 
+        public void BeginDraw()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CreateResourcesAsync()
         {
             Console.WriteLine("MockGame.CreateResourcesAsync()");
@@ -27,6 +32,11 @@ namespace GameFrameworkConsoleTestApp
         }
 
         public void Draw(GameTime gameTime, IDrawingSession drawingSession)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EndDraw()
         {
             throw new NotImplementedException();
         }
