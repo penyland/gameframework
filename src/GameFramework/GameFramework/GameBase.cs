@@ -1,7 +1,8 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using GameFramework.Contracts;
-using Microsoft.Extensions.Configuration;
+using GameFramework.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,10 +12,6 @@ namespace GameFramework
 {
     public abstract class GameBase : IGame
     {
-        public GameBase()
-        {
-        }
-
         public IList<IGameComponent> GameComponents { get; } = new List<IGameComponent>();
 
         public IServiceProvider Services { get; private set; }

@@ -1,101 +1,34 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using GameFramework.Contracts;
-using GameFramework.Input;
-using GameFramework.Platform;
-using GameFramework.Resources;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using GameFramework.Abstractions;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Text;
 
 namespace GameFramework
 {
-    public class GamePlatform<T>
-        where T : IGameFactory, new()
+    /// <summary>
+    /// This class should be used for IGame implementations to access framework provided services
+    /// so each game instance doesn't need to have those injected in the Game constructor.
+    /// </summary>
+    public class GamePlatform
     {
-        private readonly IGameFactory gameFactory;
-        private readonly IPlatformFactory platformFactory;
-        private readonly IServiceCollection serviceCollection = new ServiceCollection();
-        private readonly IPlatformWindow window;
-
-        private GamePlatform(IPlatformWindow window, IPlatformFactory platformFactory)
+        public GamePlatform(
+            IGraphicsDevice graphicsDevice,
+            IResourceManager resourceManager,
+            IInputManager inputManager)
         {
-            this.gameFactory = new T();
-            this.platformFactory = platformFactory;
-            this.window = window;
+            this.GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
+            this.ResourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
+            this.InputManager = inputManager ?? throw new ArgumentNullException(nameof(inputManager));
         }
 
-        public IServiceProvider Services { get; private set; }
+        public IGraphicsDevice GraphicsDevice { get; }
 
-        public static GamePlatform<T> Create(IPlatformWindow window, IPlatformFactory platformFactory)
-        {
-            return new GamePlatform<T>(window, platformFactory);
-        }
+        public IResourceManager ResourceManager { get; }
 
-        public void Initialize()
-        {
-            // Initialize platform services
-            this.platformFactory.Initialize(this.window, this.serviceCollection);
-
-            // Configure all framework services
-            this.ConfigureServices(this.serviceCollection);
-        }
-
-        public void Suspend()
-        {
-        }
-
-        public void Resume()
-        {
-        }
-
-        public void Run()
-        {
-            // All framework and platform services are added to the container, build it.
-            this.BuildServiceProvider(this.serviceCollection);
-
-            // Start running the framework
-            this.Services.GetService<IGameWindow>().Run();
-        }
-
-        // Create service provider
-        protected virtual void ConfigureServices(IServiceCollection services)
-        {
-            // Build config
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            services.AddSingleton<IConfiguration>(configuration);
-
-            // Add logging
-            services.AddLogging(configure =>
-                configure
-                    .AddDebug()
-                    .AddConsole());
-
-            services.AddOptions();
-
-            // Add platform window
-            services.AddSingleton<IPlatformWindow>(this.window);
-
-            // Add game services
-            this.gameFactory.AddServices(services);
-
-            // Add framework required services
-            services.AddSingleton<IGameWindow, GameWindow>();
-            services.AddSingleton<IResourceManager, ResourceManager>();
-            services.AddSingleton<IGraphicsDevice, GraphicsDevice>();
-            services.AddSingleton<IInputManager, InputManager>();
-        }
-
-        private void BuildServiceProvider(IServiceCollection services)
-        {
-            this.Services = services.BuildServiceProvider();
-        }
+        public IInputManager InputManager { get; }
     }
 }

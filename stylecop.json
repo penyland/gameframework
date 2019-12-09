@@ -4,7 +4,11 @@
     "documentationRules": {
       "xmlHeader": false,
       "companyName": "Peter Nylander",
-      "copyrightText": "Copyright (c) {companyName}.  All rights reserved.",
+      "copyrightText": "Copyright (c) {companyName}. All rights reserved.\n\nLicensed under the {licenseName} license. See {licenseFile} file in the project root for full license information.",
+      "variables": {
+        "licenseName": "MIT",
+        "licenseFile": "LICENSE"
+      },
       "documentInterfaces": false,
       "documentExposedElements": false,
       "documentInternalElements": false,
@@ -16,7 +20,7 @@
       "elementOrder": [ "kind", "accessibility", "constant", "static", "readonly" ]
     },
     "maintainabilityRules": {
-      "topLevelTypes": ["class", "interface", "struct"]
+      "topLevelTypes": [ "class", "interface", "struct" ]
     }
   }
 }

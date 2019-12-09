@@ -1,10 +1,12 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace GameFramework.Extensions
+namespace GameFramework.Platform.Extensions
 {
     public static class ColorExtensions
     {
-        public static Windows.UI.Color ToColor(this GameFramework.Graphics.Color color)
+        public static Windows.UI.Color ToColor(this GameFramework.Abstractions.Color color)
         {
             return new Windows.UI.Color
             {

@@ -1,8 +1,9 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using GameFramework;
-using GameFramework.Contracts;
-using GameFramework.Graphics;
+using GameFramework.Abstractions;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Linq;
@@ -22,11 +23,13 @@ namespace Win2D.UWPCore
             IConfiguration configuration,
             IGraphicsDevice graphicsDevice,
             IResourceManager resourceManager,
-            IInputManager inputManager,
-            IKeyboard keyboard)
+            IInputManager inputManager)
             : base(configuration, graphicsDevice, resourceManager, inputManager)
         {
-            this.keyboard = keyboard;
+            if (inputManager.HasKeyboard)
+            {
+                this.keyboard = inputManager.Keyboard;
+            }
         }
 
         public override void Initialize()
@@ -49,8 +52,6 @@ namespace Win2D.UWPCore
 
             this.particleBitmap = await this.ResourceManager.LoadAsync<ITexture>("ms-appx:///Assets/Particle.png");
             this.maxBitmap = await this.ResourceManager.LoadAsync<ITexture>("ms-appx:///Assets/max_face_south.png");
-
-            //return Task.WhenAll(
         }
 
         public override void Update(GameTime gameTime)
@@ -106,7 +107,7 @@ namespace Win2D.UWPCore
 
                 ds.Draw(this.maxBitmap, matrix3X2, Vector4.One);
 
-                GameFramework.Input.KeyboardState keyBoardState = this.keyboard.GetState();
+                KeyboardState keyBoardState = this.keyboard.GetState();
 
                 if (keyBoardState.PressedKeys.Count > 0)
                 {

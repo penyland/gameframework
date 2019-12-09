@@ -1,16 +1,17 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using GameFramework.Contracts;
+using GameFramework.Abstractions;
 using System;
 using System.Numerics;
 
-namespace GameFramework.Platform
+namespace GameFramework.Graphics
 {
     public sealed class GraphicsDevice : IGraphicsDevice
     {
         private readonly IPlatformWindow window;
         private readonly IGraphicsDeviceAdapter graphicsDeviceAdapter;
-        private readonly ISwapChain swapChain;
         private Vector2 size;
         private float dpi;
 
@@ -21,14 +22,7 @@ namespace GameFramework.Platform
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window));
             this.graphicsDeviceAdapter = graphicsDeviceAdapter ?? throw new ArgumentNullException(nameof(graphicsDeviceAdapter));
-            this.swapChain = swapChainAdapter ?? throw new ArgumentNullException(nameof(swapChainAdapter));
-
-            this.size = this.window.Size;
-            this.dpi = this.swapChain.LogicalDpi;
-
-            this.CreateDeviceResources();
-            this.CreateDeviceIndependentResources();
-            this.CreateWindowSizeDependentResources();
+            this.SwapChain = swapChainAdapter ?? throw new ArgumentNullException(nameof(swapChainAdapter));
         }
 
         public float LogicalDpi
@@ -58,7 +52,17 @@ namespace GameFramework.Platform
             }
         }
 
-        public ISwapChain SwapChain => this.swapChain;
+        public ISwapChain SwapChain { get; }
+
+        public void Initialize()
+        {
+            this.size = this.window.Size;
+            this.dpi = this.SwapChain.LogicalDpi;
+
+            this.CreateDeviceResources();
+            this.CreateDeviceIndependentResources();
+            this.CreateWindowSizeDependentResources();
+        }
 
         public void Present()
         {
@@ -108,7 +112,7 @@ namespace GameFramework.Platform
             }
             else
             {
-                this.swapChain.CreateSwapChain();
+                this.SwapChain.CreateSwapChain();
             }
         }
     }

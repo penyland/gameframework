@@ -1,9 +1,11 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Numerics;
 using Windows.Foundation;
 
-namespace GameFramework.Extensions
+namespace GameFramework.Platform.Extensions
 {
     public static class RectExtensions
     {

@@ -1,6 +1,8 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using GameFramework.Contracts;
+using GameFramework.Abstractions;
 using GameFramework.Core;
 using System;
 using System.Diagnostics;
@@ -8,9 +10,12 @@ using System.Threading.Tasks;
 
 namespace GameFramework
 {
+    /// <summary>
+    /// TODO: Rename to GameLoop and remove/move all window event handling.
+    /// </summary>
     public class GameWindow : IGameWindow
     {
-        private readonly IPlatformWindow platformWindowAdapter;
+        private readonly IPlatformWindow platformWindow;
         private readonly IGame game;
         private readonly GameTimer gameTimer = new GameTimer();
 
@@ -21,25 +26,22 @@ namespace GameFramework
         private GameFrameworkState frameworkState;
         private object stateLock = new object();
 
-        public GameWindow(IPlatformWindow platformWindow, IGraphicsDevice graphicsDevice, IInputManager inputManager, IGame game)
+        public GameWindow(IPlatformWindow platformWindow, IGraphicsDevice graphicsDevice, IGame game)
         {
             this.GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
-            this.InputManager = inputManager ?? throw new ArgumentNullException(nameof(inputManager));
             this.game = game ?? throw new ArgumentNullException(nameof(game));
 
-            this.platformWindowAdapter = platformWindow ?? throw new ArgumentNullException(nameof(platformWindow));
-            this.platformWindowAdapter.SizeChanged += this.OnSizeChanged;
-            this.platformWindowAdapter.Activated += this.OnActivated;
-            this.platformWindowAdapter.VisibilityChanged += this.OnVisibilityChanged;
-            this.platformWindowAdapter.OrientationChanged += this.OnOrientationChanged;
-            this.platformWindowAdapter.DpiChanged += this.OnDpiChanged;
+            this.platformWindow = platformWindow ?? throw new ArgumentNullException(nameof(platformWindow));
+            this.platformWindow.SizeChanged += this.OnSizeChanged;
+            this.platformWindow.Activated += this.OnActivated;
+            this.platformWindow.VisibilityChanged += this.OnVisibilityChanged;
+            this.platformWindow.OrientationChanged += this.OnOrientationChanged;
+            this.platformWindow.DpiChanged += this.OnDpiChanged;
 
             this.gameTimer.IsFixedTimeStep = false;
         }
 
         public IGraphicsDevice GraphicsDevice { get; }
-
-        public IInputManager InputManager { get; }
 
         private GameFrameworkState State
         {
@@ -126,12 +128,12 @@ namespace GameFramework
                         default:
                             break;
                     }
+                    this.platformWindow.ProcessEvents();
                 }
                 else
                 {
+                    this.platformWindow.ProcessEvents(false);
                 }
-
-                this.platformWindowAdapter.ProcessEvents();
             }
         }
 
@@ -180,6 +182,12 @@ namespace GameFramework
             }
         }
 
+        public void Initialize()
+        {
+            this.platformWindow.Initialize();
+            this.GraphicsDevice.Initialize();
+        }
+
         private bool Update(bool forceUpdate, long timeSpentPaused)
         {
             this.gameTimer.Tick(
@@ -204,12 +212,12 @@ namespace GameFramework
         {
         }
 
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        private void OnSizeChanged(object sender, Abstractions.SizeChangedEventArgs e)
         {
             this.GraphicsDevice.Size = e.Size;
         }
 
-        private void OnVisibilityChanged(object sender, VisibilityChangedEventArgs e)
+        private void OnVisibilityChanged(object sender, Abstractions.VisibilityChangedEventArgs e)
         {
             if (e.Visible && !this.isVisible)
             {

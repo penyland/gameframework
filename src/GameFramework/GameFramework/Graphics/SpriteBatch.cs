@@ -1,9 +1,9 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using GameFramework.Contracts;
+using GameFramework.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GameFramework.Graphics
 {

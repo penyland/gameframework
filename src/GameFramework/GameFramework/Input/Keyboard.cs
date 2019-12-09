@@ -1,6 +1,8 @@
-﻿// Copyright (c) Peter Nylander.  All rights reserved.
+﻿// Copyright (c) Peter Nylander. All rights reserved.
+//
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using GameFramework.Contracts;
+using GameFramework.Abstractions;
 
 namespace GameFramework.Input
 {
@@ -8,10 +10,6 @@ namespace GameFramework.Input
     {
         private KeyboardState currentState = new KeyboardState();
         private KeyboardState nextState = new KeyboardState();
-
-        public Keyboard()
-        {
-        }
 
         public bool IsConnected => true;
 
@@ -40,6 +38,11 @@ namespace GameFramework.Input
         {
             this.currentState.Clear();
             this.nextState.Clear();
+        }
+
+        public void Initialize()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
