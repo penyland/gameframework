@@ -7,7 +7,7 @@ using System.Numerics;
 namespace GameFramework.Abstractions
 {
     /// <summary>
-    /// Represents a particle resource.
+    /// A bitmap is a 2D grid of pixels that form an image.
     /// </summary>
     public interface ITexture : IResource
     {
@@ -20,5 +20,12 @@ namespace GameFramework.Abstractions
         /// Gets the size of the resource.
         /// </summary>
         Vector2 Size { get; }
+
+        /// <summary>
+        /// Returns an array of raw byte data for the entire bitmap.
+        /// </summary>
+        byte[] GetData();
+
+        void SetData(byte[] data);
     }
 }

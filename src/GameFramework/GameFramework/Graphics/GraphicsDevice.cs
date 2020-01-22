@@ -12,17 +12,20 @@ namespace GameFramework.Graphics
     {
         private readonly IPlatformWindow window;
         private readonly IGraphicsDeviceAdapter graphicsDeviceAdapter;
+        private readonly IPlatformRenderTargetFactory platformRenderTargetFactory;
         private Vector2 size;
         private float dpi;
 
         public GraphicsDevice(
             IPlatformWindow window,
             IGraphicsDeviceAdapter graphicsDeviceAdapter,
-            ISwapChain swapChainAdapter)
+            ISwapChain swapChainAdapter,
+            IPlatformRenderTargetFactory platformRenderTargetFactory)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window));
             this.graphicsDeviceAdapter = graphicsDeviceAdapter ?? throw new ArgumentNullException(nameof(graphicsDeviceAdapter));
             this.SwapChain = swapChainAdapter ?? throw new ArgumentNullException(nameof(swapChainAdapter));
+            this.platformRenderTargetFactory = platformRenderTargetFactory ?? throw new ArgumentNullException(nameof(platformRenderTargetFactory));
         }
 
         public float LogicalDpi
@@ -72,6 +75,11 @@ namespace GameFramework.Graphics
         public IDrawingSession CreateDrawingSession()
         {
             return this.SwapChain.CreateDrawingSession();
+        }
+
+        public IRenderTarget CreateRenderTarget(int width, int height)
+        {
+            return this.platformRenderTargetFactory.CreateRenderTarget(width, height);
         }
 
         private void CreateDeviceResources()

@@ -8,9 +8,9 @@ using System.Numerics;
 
 namespace GameFramework.Platform.Graphics
 {
-    public class Texture : ITexture
+    public class Texture2D : ITexture
     {
-        public Texture(CanvasBitmap canvasBitmap)
+        public Texture2D(CanvasBitmap canvasBitmap)
         {
             this.Bitmap = canvasBitmap;
         }
@@ -20,5 +20,15 @@ namespace GameFramework.Platform.Graphics
         public Vector2 Size => this.Bitmap.Size.ToVector2();
 
         public CanvasBitmap Bitmap { get; set; }
+
+        public byte[] GetData()
+        {
+            return this.Bitmap.GetPixelBytes();
+        }
+
+        public void SetData(byte[] data)
+        {
+            this.Bitmap.SetPixelBytes(data);
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace GameFramework.Platform
                 services.AddSingleton<IGameFrameworkView, GameFrameworkView>();
                 services.AddSingleton<ICoreApplicationContext, CoreApplicationContext>();
                 services.AddSingleton<IPlatformWindow, CoreWindowAdapter>();
+                services.AddSingleton<IPlatformRenderTargetFactory, CanvasRenderTargetFactory>();
                 services.AddSingleton<IKeyboardInputSource, CoreWindowKeyboardInputSource>();
 
                 services.AddHostedService<CoreApplicationHostedService>();

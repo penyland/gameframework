@@ -26,7 +26,7 @@ namespace GameFramework.Platform.Graphics
 
         public void Draw(ITexture texture, Matrix3x2 transform, Vector4 tint)
         {
-            CanvasBitmap bitmap = ((Texture)texture).Bitmap;
+            CanvasBitmap bitmap = ((Texture2D)texture).Bitmap;
             this.canvasSpriteBatch.Draw(bitmap, transform, tint, CanvasSpriteFlip.None);
         }
 

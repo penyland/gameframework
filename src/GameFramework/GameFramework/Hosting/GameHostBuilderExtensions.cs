@@ -22,6 +22,7 @@ namespace GameFramework.Hosting
                 services.AddSingleton<IGameWindow, GameWindow>();
                 services.AddSingleton<IKeyboard, Keyboard>();
                 services.AddSingleton<IInputManager, InputManager>();
+                services.AddSingleton<IGamePlatform, GamePlatform>();
             });
 
             return hostBuilder;

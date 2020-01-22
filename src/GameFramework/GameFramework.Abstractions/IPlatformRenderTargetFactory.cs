@@ -2,24 +2,14 @@
 //
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Numerics;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace GameFramework.Abstractions
 {
-    public interface IGraphicsDevice
+    public interface IPlatformRenderTargetFactory
     {
-        float LogicalDpi { get; set; }
-
-        Vector2 Size { get; set; }
-
-        ISwapChain SwapChain { get; }
-
-        void Initialize();
-
-        void Present();
-
-        IDrawingSession CreateDrawingSession();
-
         IRenderTarget CreateRenderTarget(int width, int height);
     }
 }

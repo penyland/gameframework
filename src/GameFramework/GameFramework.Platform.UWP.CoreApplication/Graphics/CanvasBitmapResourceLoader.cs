@@ -32,7 +32,7 @@ namespace GameFramework.Platform.Graphics
             }
 
             CanvasBitmap bitmap = await CanvasBitmap.LoadAsync(this.canvasDevice, new Uri(uri));
-            return new Texture(bitmap);
+            return new Texture2D(bitmap);
         }
     }
 }

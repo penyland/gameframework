@@ -126,10 +126,12 @@
     <Compile Include="Abstractions\IGameFrameworkView.cs" />
     <Compile Include="Graphics\CanvasBitmapResourceLoader.cs" />
     <Compile Include="Graphics\CanvasDeviceAdapter.cs" />
+    <Compile Include="Graphics\CanvasRenderTargetFactory.cs" />
     <Compile Include="Graphics\CanvasSpriteBatchWrapper.cs" />
     <Compile Include="Graphics\CanvasSwapChainAdapter.cs" />
     <Compile Include="Graphics\DrawingSessionAdapter.cs" />
-    <Compile Include="Graphics\Texture.cs" />
+    <Compile Include="Graphics\RenderTarget.cs" />
+    <Compile Include="Graphics\Texture2D.cs" />
     <Compile Include="Hosting\GameHostBuilderExtensions.cs" />
     <Compile Include="Input\CoreWindowKeyboardInputSource.cs" />
     <Compile Include="Platform\CoreApplicationContext.cs" />

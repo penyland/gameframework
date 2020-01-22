@@ -4,6 +4,7 @@
 
 using GameFramework;
 using GameFramework.Abstractions;
+using GameFramework.Graphics;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace Win2D.UWPCore
 
         private ITexture particleBitmap;
         private ITexture maxBitmap;
+
+        private IRenderTarget renderTarget;
 
         public Win2DGame(
             IConfiguration configuration,
@@ -52,6 +55,12 @@ namespace Win2D.UWPCore
 
             this.particleBitmap = await this.ResourceManager.LoadAsync<ITexture>("ms-appx:///Assets/Particle.png");
             this.maxBitmap = await this.ResourceManager.LoadAsync<ITexture>("ms-appx:///Assets/max_face_south.png");
+
+            this.renderTarget = this.GraphicsDevice.CreateRenderTarget(100, 100);
+            using (var ds = this.renderTarget.CreateDrawingSession())
+            {
+                ds.Draw(this.maxBitmap, Matrix3x2.Identity, Vector4.One);
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -106,6 +115,8 @@ namespace Win2D.UWPCore
                 var matrix3X2 = Matrix3x2.CreateTranslation(100, 100);
 
                 ds.Draw(this.maxBitmap, matrix3X2, Vector4.One);
+
+                ds.Draw(this.renderTarget, matrix3X2 + Matrix3x2.CreateTranslation(100, 0), Vector4.One);
 
                 KeyboardState keyBoardState = this.keyboard.GetState();
 

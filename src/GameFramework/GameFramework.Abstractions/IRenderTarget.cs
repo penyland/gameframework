@@ -6,20 +6,11 @@ using System.Numerics;
 
 namespace GameFramework.Abstractions
 {
-    public interface IGraphicsDevice
+    /// <summary>
+    /// A rendertarget is a bitmap that can be drawn onto.
+    /// </summary>
+    public interface IRenderTarget : ITexture
     {
-        float LogicalDpi { get; set; }
-
-        Vector2 Size { get; set; }
-
-        ISwapChain SwapChain { get; }
-
-        void Initialize();
-
-        void Present();
-
         IDrawingSession CreateDrawingSession();
-
-        IRenderTarget CreateRenderTarget(int width, int height);
     }
 }

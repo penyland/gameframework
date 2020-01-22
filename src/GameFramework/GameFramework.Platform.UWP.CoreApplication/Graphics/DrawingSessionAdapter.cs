@@ -43,7 +43,7 @@ namespace GameFramework.Platform.Graphics
             {
                 this.canvasDrawingSession.Blend = CanvasBlend.Add;
 
-                CanvasBitmap bitmap = ((Texture)texture).Bitmap;
+                CanvasBitmap bitmap = ((Texture2D)texture).Bitmap;
                 spriteBatch.Draw(bitmap, transform, tint, CanvasSpriteFlip.None);
 
                 this.canvasDrawingSession.Blend = previousBlend;
