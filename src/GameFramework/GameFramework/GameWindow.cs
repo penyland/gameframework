@@ -128,6 +128,7 @@ namespace GameFramework
                         default:
                             break;
                     }
+
                     this.platformWindow.ProcessEvents();
                 }
                 else

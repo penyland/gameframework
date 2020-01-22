@@ -124,7 +124,6 @@
   <ItemGroup>
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\RectExtensions.cs" />
-    <Compile Include="Input\CoreWindowKeyboardInputSource2.cs" />
     <Compile Include="Platform\GameLoopSynchronizationContext.cs" />
     <Compile Include="Input\InputManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

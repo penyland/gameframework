@@ -13,7 +13,7 @@ namespace GameFramework
     /// This class should be used for IGame implementations to access framework provided services
     /// so each game instance doesn't need to have those injected in the Game constructor.
     /// </summary>
-    public class GamePlatform
+    public class GamePlatform : IGamePlatform
     {
         public GamePlatform(
             IGraphicsDevice graphicsDevice,

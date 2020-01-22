@@ -13,7 +13,7 @@ namespace GameFramework
     {
         // GamePlatform
         // GameWindow
-        // SoundDevice
+        // AudioManager
         // ResourceManagement
         // InputDevices
         public Game(IConfiguration configuration, IGraphicsDevice graphicsDevice, IResourceManager resourceManager, IInputManager inputManager)
